@@ -8,7 +8,10 @@
             'port'      =>  '6667',
             'nick'      =>  'Viper',
             'user'      =>  'Viper',
-            'name'      =>  'o0 Viper 0o'
+            'name'      =>  'o0 Viper 0o',
+            'cmdid'     =>  '~',
+            'email'     =>  'hell_of_the_devil@hotmail.co.uk',
+            'nspass'    =>  'hello-fuckers'
         );
         private $socket;
 
@@ -30,6 +33,18 @@
         
         public function write($str) {
             socket_write($this->getSocket(), $str."\n");
+        }
+        
+        public function ready() {
+            $read = array($this->getSocket());
+            $n = null;
+            if (socket_Select($read, $n, $n, 0) > 0) return true;
+            else return false;
+        }
+        
+        public function read() {
+            $r = socket_read($this->getSocket(), 1024, PHP_NORMAL_READ);
+            return $r;
         }
     }
     
