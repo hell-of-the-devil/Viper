@@ -3,6 +3,7 @@
     require 'Bot.php';
     
     class Socket {
+        public $bot;
         public $config = array(
             'server'    =>  '92.24.11.204',
             'port'      =>  '6667',
@@ -11,12 +12,23 @@
             'name'      =>  'o0 Viper 0o',
             'cmdid'     =>  '~',
             'email'     =>  'hell_of_the_devil@hotmail.co.uk',
-            'nspass'    =>  'hello-fuckers'
+            'nspass'    =>  'hello-fuckers',
+            'owners'    =>  array('hell-of-the-dev', 'JoshG')
         );
+        
         private $socket;
 
         public function __construct() {
-            $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+            $this->createSocket();
+            $this->connect();
+            $this->bot = new Bot($this);
+        }
+        
+        public function createSocket() {
+            return $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        }
+        
+        public function connect() {
             $connect = socket_connect($this->getSocket(), $this->config['server'], $this->config['port']);
             if ($connect == true) {
                 new Authentication($this);
@@ -24,7 +36,10 @@
                 echo "Failed to connect to server!";
                 die();
             }
-            $bot = new Bot($this);
+        }
+        
+        public function close() {
+            socket_close($this->getSocket());
         }
         
         public function getSocket() {
@@ -33,6 +48,12 @@
         
         public function write($str) {
             socket_write($this->getSocket(), $str."\n");
+        }
+        
+        public function message($dest, $contents) {
+            foreach (explode("\n", $contents) as $s) {
+                $this->write("PRIVMSG $dest :".$s);
+            }
         }
         
         public function ready() {
