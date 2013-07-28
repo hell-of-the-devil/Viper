@@ -1,0 +1,11 @@
+Command :: Description
+
+dummy :: This is a dummy command for testing things.
+eval :: uses php's eval command to evaluate certin parameters and print them to the active channel.
+register :: register to nickserv.
+identify :: identify to nickserv.
+die :: execute die();.
+quit :: send QUIT command to server and kill connection (Warning: bot still runs in background).
+reboot :: disconnects and reconnects the bot.
+db :: performs database commands.
+help :: shows this help file.

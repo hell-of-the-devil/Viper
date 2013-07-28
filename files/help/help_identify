@@ -1,0 +1,4 @@
+Command : identify
+
+Description : Identifies with Nickname Services (alias: nickserv)
+Uses the array "$config" parameter 'nspass' to identify     

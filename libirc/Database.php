@@ -17,13 +17,33 @@ class Database {
     public function insert($connection, $query) {
         $connection = $this->getConnectionSocket();
         $result = mysqli_query($connection, $query);
-        if (!result) {
+        if (!$result) {
             echo 'MySQL query error: '. mysqli_error($this->getConnectionSocket());
             return;
         }
     }
     
+    public function update($connection, $query) {
+        $connection = $this->getConnectionSocket();
+        $result = mysqli_query($connection, $query);
+        if(!$result) {
+            echo 'MySQL query error: '.  mysqli_error($this->getConnectionSocket());
+            return;
+        }
+    }
+    
+    public function delete($connection, $query) {
+        $connection = $this->getConnectionSocket();
+        $result = mysqli_query($connection, $query);
+        
+        if(!$result) {
+            echo 'MySQL query error: '.mysqli_error($this->getConnectionSocket());
+            return;
+        }
+    }
+    
     public function getConnectionSocket() {
+        $this->connection();
         return $this->socket;
     }
     

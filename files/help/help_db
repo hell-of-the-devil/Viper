@@ -1,0 +1,5 @@
+Command Db :
+
+Description : Executes database commands (this is vipers internal database commands)
+
+TODO : add subcommands help to this help section
