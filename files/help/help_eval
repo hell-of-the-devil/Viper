@@ -1,4 +1,0 @@
-Command : eval
-
-Description : The eval command uses php's eval command to evaluate parameters and
-send the information to the active channel.

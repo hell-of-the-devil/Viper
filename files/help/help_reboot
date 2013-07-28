@@ -1,5 +1,0 @@
-Command : reboot
-
-Description : reboots vipers sockets to reconnect to the specified irc server;
-
-TODO : add subcommand --jump-server to jump to the next server in a server list

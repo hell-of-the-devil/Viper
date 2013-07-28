@@ -13,6 +13,7 @@
             'cmdid'     =>  '~',
             'email'     =>  'hell_of_the_devil@hotmail.co.uk',
             'nspass'    =>  'hello-fuckers',
+            'owners'    =>  array('hell-of-the-dev', 'JoshG')
         );
         
         private $socket;
@@ -50,14 +51,8 @@
         }
         
         public function message($dest, $contents) {
-            foreach(explode("\n", $contents) as $s) {
+            foreach (explode("\n", $contents) as $s) {
                 $this->write("PRIVMSG $dest :".$s);
-            }
-        }
-        
-        public function notice($dest, $contents) {
-            foreach(explode("\n", $contents) as $s) {
-                $this->write("NOTICE $dest :".$s);
             }
         }
         

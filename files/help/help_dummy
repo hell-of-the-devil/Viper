@@ -1,4 +1,0 @@
-Command : dummy
-
-Description : The dummy command is a nulled command that returns a string, it is 
-used for development purposes only.

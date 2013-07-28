@@ -1,4 +1,0 @@
-Command : register
-
-Description : registers with Nickname Services (alias: nickserv)
-Uses the array "$config" parameters 'email' & 'nspass' in Socket.php to register
