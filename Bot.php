@@ -34,8 +34,7 @@ class Bot {
                     }
                     $args = array_slice($from, 3);
                     $cic = str_split($args[0]);
-
-                    if ($cic[1] === $socket->config['cmdid']) {
+                    if ($cic[1] == $socket->config['cmdid']) {
                         new CommandHandler($this, $socket, $commander, $rawmode, $channel, $args);
                     }
                 }

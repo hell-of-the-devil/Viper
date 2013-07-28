@@ -1,0 +1,4 @@
+Command : quit
+
+Description : sends the server a QUIT signal to quit the server and kills
+vipers process

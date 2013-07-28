@@ -9,10 +9,15 @@ class Reader {
         }
     }
     
-    public function readfile($file) {
-        if(file_exists($file) && is_readable($file)) {
-            $data = readfile($file);
-            $lines = array(read);
+    public static function read_file($file) {
+        if(file_exists($file)) {
+            if(is_readable($file)) {
+                return file_get_contents($file);
+            } else {
+                echo "Could not read $file, file seems to be corrupted";
+            }
+        } else {
+            echo "Could not read $file, file is missing";
         }
     }
 }
