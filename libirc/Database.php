@@ -11,7 +11,14 @@ class Database {
             echo 'MySQL query error: '.  mysqli_error($this->getConnectionSocket());
             return;
         }
-        return mysqli_fetch_assoc($result);
+        if ($result->num_rows == 1) return mysqli_fetch_assoc($result);
+        else if ($result->num_rows > 1) {
+            $r = array();
+            while ($row = $result->fetch_assoc()) {
+                $r[] = $row;
+            }
+            return $r;
+        }
     }
     
     public function insert($connection, $query) {

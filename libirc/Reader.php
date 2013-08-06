@@ -20,5 +20,11 @@ class Reader {
             echo "Could not read $file, file is missing";
         }
     }
+    
+    public static function read_file_by_line($file) {
+        $str = self::read_file($file);
+        $str = explode("\n", $str);
+        return $str;
+    }
 }
 ?>

@@ -1,6 +1,7 @@
 <?php
 require 'libirc/Database.php';
 require_once 'Dec.php';
+require_once 'libirc/Encryption.php';
 class CommandDb extends Database {
     public function __construct(Bot $bot, Socket $socket, $commander, $rawmode, $chan, $args) {
         if(count($args) < 2) {
@@ -32,13 +33,13 @@ class CommandDb extends Database {
                             if($this->userCheck($args[2])) {
                                 switch($args[3]) {
                                     case "login" :
-                                        echo "LOGIN";
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Editing variable login on nick $args[2]");
                                         $this->update($this->getConnectionSocket(), "UPDATE user SET login='$args[4]' where nick='$args[2]'");
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." set login for $args[2] to $args[4]");
                                         break;
                                     case "password" :
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Editing variable password on nick $args[2]");
+                                        $args[4] = Encryption::SHA256($args[4]);
                                         $this->update($this->getConnectionSocket(), "UPDATE user SET password='$args[4]' where nick='$args[2]'");
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." set password for $args[2] to *****");
                                         break;
@@ -51,19 +52,23 @@ class CommandDb extends Database {
                                         $oldrank = $this->getRank($args[2]);
                                         if($this->rankCheck($this->getRank($commander))) {
                                             $newrank = $args[4];
-                                            echo $this->rankupdown($oldrank, $newrank);
-                                            if($this->rankupdown($oldrank, $newrank) == "up") {
-                                                $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Congrats $args[2], you just ranked up from $oldrank to $newrank");
-                                                echo "up";
-                                            } elseif($this->rankupdown($oldrank, $newrank) == "down") {
-                                                $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Fuck you $args[2], you have been deranked from $oldrank to $newrank for your incompetence");
-                                                echo "down";
-                                            } elseif($this->rankupdown($oldrank, $newrank) === null) {
-                                                $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] is already a(n) $newrank");
-                                                echo "null";
-                                                return;
+                                            if($this->rankCheck($newrank)) {
+                                                if($this->rankupdown($oldrank, $newrank) == "up") {
+                                                    $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Congrats $args[2], you just ranked up from $oldrank to $newrank");
+                                                    echo "up";
+                                                } elseif($this->rankupdown($oldrank, $newrank) == "down") {
+                                                    $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Fuck you $args[2], you have been deranked from $oldrank to $newrank for your incompetence");
+                                                    echo "down";
+                                                } elseif($this->rankupdown($oldrank, $newrank) === null) {
+                                                    $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] is already a(n) $newrank");
+                                                    echo "null";
+                                                    return;
+                                                } else {
+                                                    echo "fuck do i know how you got here :/";
+                                                    return;
+                                                }
                                             } else {
-                                                echo "fuck do i know how you got here :/";
+                                                $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $newrank is not a valid rank....");
                                                 return;
                                             }
                                         }
@@ -103,12 +108,18 @@ class CommandDb extends Database {
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] is not listed on the database");
                 }
                 break;
+            case "listusers" :
+                $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Checking UserList");
+                $data = $this->select($this->getConnectionSocket(), "SELECT nick FROM user");
+                foreach ($data as $k) {
+                    $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." ".$k['nick']);
+                }
+                break;
         }
     }
     
     public function userCheck($str) {
         $res = $this->select($this->connection(), "SELECT * FROM user WHERE nick='$str'");
-        var_dump(count($res));
         if(count($res) > 1) {
             return true;
         } else {
@@ -119,17 +130,19 @@ class CommandDb extends Database {
     public function rankCheck($str) {
         $ranks = array(
             'owner',
-            'co-owner',
+            'JoshG',
             'admin',
             'op',
             'janitor',
             'friend'
         );
         
-        if(in_array($str, $ranks)) {
-            return true;
-        } else {
-            return false;
+        for($i = 0; $i < count($ranks); $i++) {
+            if($str == $ranks[$i]) {
+                echo "TRUE \n";
+                var_dump($str." ".$ranks[$i]);
+                return true;
+            }
         }
     }
     
@@ -189,6 +202,9 @@ class CommandDb extends Database {
                 } else {
                     return "up";
                 }
+                break;
+            case " " :
+                return "up";
                 break;
         }
     }

@@ -1,14 +1,12 @@
 <?php
 
 require 'CommandHandler.php';
+require 'PrivateMessageHandler.php';
 
 class Bot {
 
     public function __construct(Socket $socket) {
         while (true) {
-            $read = array($socket->getSocket());
-            $n = null;
-
             if ($socket->ready()) {
                 $raw = $socket->read();
 
@@ -33,9 +31,21 @@ class Bot {
                         $channel = null;
                     }
                     $args = array_slice($from, 3);
-                    $cic = str_split($args[0]);
+                    
+                    if($args[0] === NULL) {
+                        $cic = str_split($args[1]);
+                    } else {
+                        $cic = str_split($args[0]);
+                    }    
+                        
                     if ($cic[1] == $socket->config['cmdid']) {
-                        new CommandHandler($this, $socket, $commander, $rawmode, $channel, $args);
+                        if($channel != NULL) {
+                            new CommandHandler($this, $socket, $commander, $rawmode, $channel, $args);
+                        } 
+                    } else {
+                        if($channel == NULL) {
+                            new PrivateMessageHandler($socket, $commander, $args);
+                        }
                     }
                 }
 
@@ -60,7 +70,6 @@ class Bot {
                     }
                     $e = array('users' => $ul, 'chan' => $chan);
                     $this->channels[$chan] = $e['users'];
-                    var_Dump($this->channels[$chan]);
                 }
 
                 if ($from[1] == "PART") {
