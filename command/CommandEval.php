@@ -6,7 +6,6 @@ class CommandEval {
         eval(implode(" ", array_slice($args, 1)));
         $returned = ob_get_clean();
         $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Evaluation".Dec::dgreen."] ".Dec::bold.Dec::orange.$returned);
-
     }
 }
 ?>

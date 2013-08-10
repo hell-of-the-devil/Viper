@@ -19,7 +19,7 @@ class Bot {
                 if ($from[0] === "PING") {
                     $socket->write("PONG " . $from[1]);
                 }
-
+                
                 if ($from[1] == "PRIVMSG") {
                     $commander = $this->getCommander($from[0]);
                     $rawmode = $from[1];

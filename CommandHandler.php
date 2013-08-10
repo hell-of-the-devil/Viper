@@ -107,7 +107,7 @@ class CommandHandler extends Database {
     }
 
     public function getRank($commander) {
-        return $this->select($this->getConnectionSocket(), "SELECT rank FROM user WHERE nick='$commander'");
+        return $this->select_what_where("rank", "user", "nick='$commander'");
     }
 
     public function getCommandRanks($commander, $command) {

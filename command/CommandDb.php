@@ -12,16 +12,12 @@ class CommandDb extends Database {
         switch ($args[1]) {
             case "adduser" :
                 if(count($args) > 1) {
-                    if($bot->ison($args[2], $chan)) {
-                        if(!$this->userCheck($args[2])) {
-                            $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Adding `$args[2]` to the datbase");
-                            $this->insert($this->getConnectionSocket(), "INSERT INTO user set nick='$args[2]', login=' ', password=' ' , flags=' ', rank=' ';");
-                            $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Added $args[2] to database");
-                        } else {
-                            $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] already exists on the database");
-                        }
+                    if(!$this->userCheck($args[2])) {
+                        $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Adding `$args[2]` to the datbase");
+                        $this->insertinto("user", "nick='$args[2]'");
+                        $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Added $args[2] to database");
                     } else {
-                        $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] needs to be in $chan to be added to the database (Security Feature) \\being phased out\\");
+                        $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] already exists on the database");
                     }
                 } else {
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Usage :: ~db adduser <nick>");
@@ -34,18 +30,18 @@ class CommandDb extends Database {
                                 switch($args[3]) {
                                     case "login" :
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Editing variable login on nick $args[2]");
-                                        $this->update($this->getConnectionSocket(), "UPDATE user SET login='$args[4]' where nick='$args[2]'");
+                                        $this->update_where("user", "login='$args[4]'", "nick='$args[2]'");
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." set login for $args[2] to $args[4]");
                                         break;
                                     case "password" :
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Editing variable password on nick $args[2]");
                                         $args[4] = Encryption::SHA256($args[4]);
-                                        $this->update($this->getConnectionSocket(), "UPDATE user SET password='$args[4]' where nick='$args[2]'");
+                                        $this->update_where("user", "password='$args[4]'", "nick='$args[2]'");
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." set password for $args[2] to *****");
                                         break;
                                     case "flags" :
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Editing variable flags on nick $args[2]");
-                                        $this->update($this->getConnectionSocket(), "UPDATE user SET flags='$args[4]' where nick='$args[2]'");
+                                        $this->update_where("user", "flags='$args[4]'", "nick='$args[2]'");
                                         $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." set flags for $args[2] to $args[4]");
                                         break;
                                     case "rank" :
@@ -72,7 +68,7 @@ class CommandDb extends Database {
                                                 return;
                                             }
                                         }
-                                        $this->update($this->getConnectionSocket(), "UPDATE user SET rank='$args[4]' WHERE nick='$args[2]'");
+                                        $this->update_where("user", "rank='$args[4]'", "nick='$args[2]'");
                                         break;
                                 }
                             } else {
@@ -88,7 +84,7 @@ class CommandDb extends Database {
             case "viewuser" :
                 if($this->userCheck($args[2])) {
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Retreiving stats for $args[2]");
-                    $data = $this->select($this->getConnectionSocket(), "SELECT * FROM user WHERE nick='$args[2]'");
+                    $data = $this->select_all_where("user", "nick='$args[2]'");
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." UserID ".Dec::purple.">>".Dec::orange." ".$data['id']);
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Nick ".Dec::purple.">>".Dec::orange." ".$data['nick']);
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Login ".Dec::purple.">>".Dec::orange." ".$data['login']);
@@ -102,7 +98,7 @@ class CommandDb extends Database {
             case "remuser" :
                 if($this->userCheck($args[2])) {
                     $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Attempting to delete $args[2] permanently");
-                    $this->delete($this->getConnectionSocket(), "DELETE FROM user WHERE nick='$args[2]'");
+                    $this->delete("user", "nick='$args[2]");
                     $socket->notice($commander, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] account deleted permanently...");
                 } else {
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." $args[2] is not listed on the database");
@@ -110,7 +106,7 @@ class CommandDb extends Database {
                 break;
             case "listusers" :
                 $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." Checking UserList");
-                $data = $this->select($this->getConnectionSocket(), "SELECT nick FROM user");
+                $data = $this->select_what("nick", "user");
                 foreach ($data as $k) {
                     $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."Database".Dec::dgreen."]".Dec::bold.Dec::orange." ".$k['nick']);
                 }
@@ -119,7 +115,7 @@ class CommandDb extends Database {
     }
     
     public function userCheck($str) {
-        $res = $this->select($this->connection(), "SELECT * FROM user WHERE nick='$str'");
+        $res = $this->select_all_where("user", "nick='$str'");
         if(count($res) > 1) {
             return true;
         } else {
@@ -140,15 +136,14 @@ class CommandDb extends Database {
         for($i = 0; $i < count($ranks); $i++) {
             if($str == $ranks[$i]) {
                 echo "TRUE \n";
-                var_dump($str." ".$ranks[$i]);
                 return true;
             }
         }
     }
     
     public function getRank($commander) {
-        $rank = $this->select($this->getConnectionSocket(), "SELECT rank FROM user WHERE nick='$commander'");
-        return implode(" ", $rank);  
+        $rank = $this->select_what_where("rank", "user", "nick='$commander'");
+        return implode(" ", $rank);
     }
     
     public function rankupdown($oldrank, $newrank) {
@@ -203,7 +198,7 @@ class CommandDb extends Database {
                     return "up";
                 }
                 break;
-            case " " :
+            case "" :
                 return "up";
                 break;
         }
