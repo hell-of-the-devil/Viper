@@ -7,15 +7,15 @@
                     case "read" :
                         $str = Reader::read_file_by_line("files/todo/todo.TODO");
                         if($str[0] != "") {
-                            $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."TOFO".Dec::dgreen."]".Dec::bold.Dec::orange." ".$str[0]);
+                            $socket->message($chan, Tag::getTag("Todo")." ".$str[0]);
                         } else {
-                            $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."TODO".Dec::dgreen."]".Dec::bold.Dec::orange." Shit boy, you ain't got shit to do");
+                            $socket->message($chan, Tag.getTag("Todo")." Shit boy, you ain't got shit to do");
                         }
                         break;
 
                     case "write" :
                         Writer::append_file("files/todo/todo.TODO", implode(" ", array_slice($args, 2))."\n");
-                        $socket->message($chan, Dec::bold.Dec::dgreen."[".Dec::dgray."TODO".Dec::dgreen."]".Dec::bold.Dec::orange." Added `".implode(" ", array_slice($args, 2))."` to `TODO` list");
+                        $socket->message($chan, Tag::getTag("Todo")." Added `".implode(" ", array_slice($args, 2))."` to `TODO` list");
                         break;
                 }
             }

@@ -1,17 +1,17 @@
 <?php
-
-require 'CommandHandler.php';
-require 'PrivateMessageHandler.php';
-
+require_once 'CommandHandler.php';
+require_once 'PrivateMessageHandler.php';
+require_once 'libirc/Database.php';
 class Bot {
-
+        
     public function __construct(Socket $socket) {
         while (true) {
             if ($socket->ready()) {
                 $raw = $socket->read();
 
-                if (trim($raw) == "")
+                if (trim($raw) == "") {
                     continue;
+                }
 
                 echo $raw;
                 $from = explode(" ", trim($raw));
@@ -44,7 +44,7 @@ class Bot {
                         } 
                     } else {
                         if($channel == NULL) {
-                            new PrivateMessageHandler($socket, $commander, $args);
+                            new PrivateMessageHandler($this, $socket, $commander, $args);
                         }
                     }
                 }
@@ -71,6 +71,10 @@ class Bot {
                     $e = array('users' => $ul, 'chan' => $chan);
                     $this->channels[$chan] = $e['users'];
                 }
+                
+                if($from[1] == "001") {
+                    $socket->loadOnStart();
+                }
 
                 if ($from[1] == "PART") {
                     $chan = $from[2];
@@ -80,6 +84,10 @@ class Bot {
                         if ($u['user'] == $user) {
                             unset($this->channels[$chan][$k]);
                         }
+                    }
+                    
+                    if($this->userCheck($user)) {
+                        Database::update_where("user", "active='false'", "nick='$user'");
                     }
                 }
                 
@@ -101,6 +109,9 @@ class Bot {
                             }
                         }
                     }
+                    if($this->userCheck($user)) {
+                        Database::update_where("user", "active='false'", "nick='$user'");
+                    }
                 }
                 
                 if ($from[1] == "KICK") {
@@ -111,6 +122,9 @@ class Bot {
                         if ($u['user'] == $user) {
                             unset($this->channels[$chan][$k]);
                         }
+                    }
+                    if($this->userCheck($user)) {
+                        Database::update_where("user", "active='false'", "nick='$user'");
                     }
                 }
                 
@@ -126,8 +140,20 @@ class Bot {
                             }
                         }
                     }
+                    if($this->userCheck($oldnick)) {
+                        Database::update_where("user", "active='false'", "nick='$oldnick'");
+                    }
                 }
             }
+        }
+    }
+    
+    public function userCheck($str) {
+        $res = Database::select_all_where("user", "nick='$str'");
+        if(count($res) > 1) {
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -144,7 +170,11 @@ class Bot {
     public function getCommander($str) {
         return ltrim(implode("", array_slice(explode("!", $str, 2), 0, 1)), ":");
     }
-
+    
+    public function getDatabase() {
+        $db = new Database();
+        return $db;
+    }
 }
 
 ?>

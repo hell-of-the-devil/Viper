@@ -16,11 +16,17 @@
         );
         
         private $socket;
-
+        public static $autoexec = 0;
+        
         public function __construct() {
             $this->createSocket();
             $this->connect();
             $this->bot = new Bot($this);
+        }
+        
+        public function loadOnStart() {
+            $this->write("MODE ".$this->config['nick']." +B");
+            $this->message("nickserv", "identify ".$this->config['nspass']);
         }
         
         public function createSocket() {

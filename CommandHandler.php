@@ -3,7 +3,7 @@
 /*
  * UPDATE 4 complete overhaul of the main backbone of the command handler, also added PrivateMessageHandler.php to handle private message commands
  */
-require_once 'Dec.php';
+require_once 'Tag.php';
 require_once 'libirc/Reader.php';
 require_once 'command/CommandDummy.php';
 require_once 'command/CommandEval.php';
@@ -21,49 +21,51 @@ class CommandHandler extends Database {
 
     public function __construct(Bot $bot, Socket $socket, $commander, $rawmode, $chan, $args) {
         $command = trim($args[0], $charlist = ":" . $socket->config['cmdid']);
+        $active = Database::select_what_where("active", "user", "nick='$commander'");
+        if($active['active'] == "true") {
+            if ($this->getCommandRanks($commander, $command) == "dummy") {
+                new CommandDummy($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "dummy") {
-            new CommandDummy($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "eval") {
+                new CommandEval($bot, $socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "eval") {
-            new CommandEval($bot, $socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "register") {
+                new CommandRegister($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "register") {
-            new CommandRegister($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "identify") {
+                new CommandIdentify($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "identify") {
-            new CommandIdentify($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "die") {
+                new CommandDie($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "die") {
-            new CommandDie($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "quit") {
+                new CommandQuit($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "quit") {
-            new CommandQuit($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "reboot") {
+                new CommandReboot($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "reboot") {
-            new CommandReboot($socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "db") {
+                new CommandDb($bot, $socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "db") {
-            new CommandDb($bot, $socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "help") {
+                new CommandHelp($bot, $socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "help") {
-            new CommandHelp($bot, $socket, $commander, $rawmode, $chan, $args);
-        }
+            if ($this->getCommandRanks($commander, $command) == "login") {
+                new CommandLogin($socket, $commander, $rawmode, $chan, $args);
+            }
 
-        if ($this->getCommandRanks($commander, $command) == "login") {
-            new CommandLogin($socket, $commander, $rawmode, $chan, $args);
-        }
-
-        if ($this->getCommandRanks($commander, $command) == "todo") {
-            new CommandTodo($socket, $commander, $rawmode, $chan, $args);
+            if ($this->getCommandRanks($commander, $command) == "todo") {
+                new CommandTodo($socket, $commander, $rawmode, $chan, $args);
+            }
         }
 
         if ($this->getCommandRanks($commander, $command) == "failed") {

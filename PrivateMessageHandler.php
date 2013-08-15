@@ -1,12 +1,14 @@
 <?php
     require_once 'libirc/Database.php';
-    class PrivateMessageHandler extends Database {
+    class PrivateMessageHandler {
 
-        public function __construct(Socket $socket, $commander, $args) {
+        public function __construct(Bot $bot, Socket $socket, $commander, $args) {
             $command = trim($args[0], $charlist = ":");
-
-            if ($this->getCommandRanks($commander, $command) == "login") {
-                new CommandLogin($socket, $commander, $args);
+            $active = Database::select_what_where("active", "user", "nick='$commander'");
+            if($active['active']) {
+                if ($this->getCommandRanks($commander, $command) == "login") {
+                    new CommandLogin($bot, $socket, $commander, $args);
+                }
             }
 
             if ($this->getCommandRanks($commander, $command) == "failed") {
@@ -15,7 +17,7 @@
         }
 
         public function getRank($commander) {
-            return $this->select($this->getConnectionSocket(), "SELECT rank FROM user WHERE nick='$commander'");
+            return Database::select_what_where("rank", "user", "nick='$commander'");
         }
 
         public function getCommandRanks($commander, $command) {
