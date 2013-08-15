@@ -1,5 +1,10 @@
 <?php
-class Database {        
+class Database {
+    public static function getConnectionSocket() {
+        $socket = mysqli_connect("127.0.0.1", "mysql login", "mysql password", "Database");
+        return $socket;
+    }
+    
     public static function select_all ($table) {
         $connection = self::getConnectionSocket();
         $result = mysql_query($connection, "SELECT * FROM $table");
@@ -124,11 +129,6 @@ class Database {
             echo 'MySQL query error: '.mysqli_error($connection);
             return;
         }
-    }
-    
-    public static function getConnectionSocket() {
-        $socket = mysqli_connect("192.168.1.70", "viper", "1029adc", "viper");
-        return $socket;
     }
     
     public static function ConnectionClose() {
