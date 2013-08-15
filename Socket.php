@@ -5,14 +5,15 @@
     class Socket {
         public $bot;
         public $config = array(
-            'server'    =>  '92.24.11.204', //irc server to connect to
+//            'server'    =>  'irc.ukchitchat.com', //irc server to connect to
+            'server'    =>  '92.24.11.204',
             'port'      =>  '6667', //server port
             'nick'      =>  'Viper', //nick
             'user'      =>  'Viper', //username
             'name'      =>  'o0 Viper 0o', //realname
             'cmdid'     =>  '~', //command trigger character
             'email'     =>  'viper@null.null', //email to register with
-            'nspass'    =>  'vIpErRuLeS', //password to register and identify with
+            'nspass'    =>  'hello-fuckers', //password to register and identify with
         );
         
         private $socket;

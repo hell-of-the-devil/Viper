@@ -6,7 +6,7 @@ CREATE  TABLE `viper`.`user` (
   `login` VARCHAR(128) NULL ,
   `password` VARCHAR(128) NULL ,
   `flags` VARCHAR(30) NULL ,
-  `rank` VARCHAR(10) NULL ,
+  `rank` VARCHAR(10) NOT NULL ,
   `active` VARCHAR(5) NOT NULL DEFAULT 'false' ,
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) ,
   UNIQUE INDEX `nick_UNIQUE` (`nick` ASC) ,

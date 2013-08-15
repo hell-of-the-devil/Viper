@@ -1,7 +1,7 @@
 <?php
 class Database {
     public static function getConnectionSocket() {
-        $socket = mysqli_connect("127.0.0.1", "mysql login", "mysql password", "Database");
+        $socket = mysqli_connect("192.168.1.70", "viper", "1029adc", "viper");
         return $socket;
     }
     

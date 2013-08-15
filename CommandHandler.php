@@ -28,7 +28,7 @@ class CommandHandler extends Database {
             }
 
             if ($this->getCommandRanks($commander, $command) == "eval") {
-                new CommandEval($bot, $socket, $commander, $rawmode, $chan, $args);
+                new CommandEval($this, $bot, $socket, $commander, $rawmode, $chan, $args);
             }
 
             if ($this->getCommandRanks($commander, $command) == "register") {
@@ -66,6 +66,8 @@ class CommandHandler extends Database {
             if ($this->getCommandRanks($commander, $command) == "todo") {
                 new CommandTodo($socket, $commander, $rawmode, $chan, $args);
             }
+        } else {
+            $socket->message($commander, Tag::getTag("AuthServ")." You are not logged in");
         }
 
         if ($this->getCommandRanks($commander, $command) == "failed") {
@@ -109,7 +111,8 @@ class CommandHandler extends Database {
     }
 
     public function getRank($commander) {
-        return $this->select_what_where("rank", "user", "nick='$commander'");
+        $rank = Database::select_what_where("rank", "user", "nick='$commander'");
+        return $rank['rank'];
     }
 
     public function getCommandRanks($commander, $command) {
@@ -121,8 +124,8 @@ class CommandHandler extends Database {
             'janitor',
             'friend'
         );
-
-        $currentrank = implode(" ", $this->getRank($commander));
+        $rank = $this->getRank($commander);
+        $currentrank = $rank;
         if ($command == "todo") {
             if ($currentrank == "owner" and $commander == "hell-of-the-dev") {
                 return $command;
