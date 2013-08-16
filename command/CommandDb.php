@@ -114,7 +114,7 @@ class CommandDb extends Database {
     public function rankCheck($str) {
         $ranks = array(
             'owner',
-            'JoshG',
+            'co-owner',
             'admin',
             'op',
             'janitor',

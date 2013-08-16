@@ -28,6 +28,7 @@
         public function loadOnStart() {
             $this->write("MODE ".$this->config['nick']." +B");
             $this->message("nickserv", "identify ".$this->config['nspass']);
+            Database::update("user", "active='false'");
         }
         
         public function createSocket() {

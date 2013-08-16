@@ -13,8 +13,9 @@
             
             if($bot->userCheck($commander)) {
                 $getlogin = Database::select_what_where("login", "user", "nick='$commander'");
+                $passwd = Database::select_what_where("password", "user", "nick='$commander'");
                 if($getlogin['login'] == $login) {
-                    if(HashCheck::check($pass, Database::select_what_where("password", "user", "nick='$commander'"))) {
+                    if(HashCheck::check($pass, $passwd['password'])) {
                         Database::update_where("user", "active='true'", "nick='$commander'");
                         $socket->message($commander, Tag::getTag("AuthServ")." You have logged in as $login");
                     } else {
